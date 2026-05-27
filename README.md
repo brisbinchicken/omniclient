@@ -41,6 +41,12 @@ Working in IT support demands precision. OmniClient acts as your absolute comman
 </p>
 
 <p align="center">
+  <img src="assets/ClientSelection.png" alt="OmniClient Client Selection" width="800"/>
+  <br>
+  <em>Seamlessly Switch Between Client Contexts</em>
+</p>
+
+<p align="center">
   <img src="assets/ClientCreation.png" alt="Client Creation Interface" width="800"/>
   <br>
   <em>Client Creation & Partitioning</em>
