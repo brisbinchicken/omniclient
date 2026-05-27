@@ -35,6 +35,12 @@ Working in IT support demands precision. OmniClient acts as your absolute comman
 ## 📸 Screenshots
 
 <p align="center">
+  <img src="assets/HomeScreen.png" alt="OmniClient Home Screen" width="800"/>
+  <br>
+  <em>OmniClient Empty State Home Screen</em>
+</p>
+
+<p align="center">
   <img src="assets/ClientCreation.png" alt="Client Creation Interface" width="800"/>
   <br>
   <em>Client Creation & Partitioning</em>
