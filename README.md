@@ -35,15 +35,33 @@ Working in IT support demands precision. OmniClient acts as your absolute comman
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="assets/screenshot1.png" alt="OmniClient Main Interface" width="800"/>
+  <img src="assets/ClientCreation.png" alt="Client Creation Interface" width="800"/>
   <br>
-  <em>Main Browser Interface & Client Switcher</em>
+  <em>Client Creation & Partitioning</em>
 </p>
 
 <p align="center">
-  <img src="assets/screenshot2.png" alt="OmniClient Vault" width="800"/>
+  <img src="assets/PasswordVault.png" alt="OmniClient Password Vault" width="800"/>
   <br>
-  <em>The Credential Vault & Bookmark Manager</em>
+  <em>The Credential Vault</em>
+</p>
+
+<p align="center">
+  <img src="assets/BookmarkBar.png" alt="OmniClient Bookmark Bar" width="800"/>
+  <br>
+  <em>Per-Client Bookmarks Bar</em>
+</p>
+
+<p align="center">
+  <img src="assets/BookmarkManager.png" alt="OmniClient Bookmark Manager" width="800"/>
+  <br>
+  <em>Hierarchical Bookmark Manager</em>
+</p>
+
+<p align="center">
+  <img src="assets/EditBookmark.png" alt="OmniClient Edit Bookmark Modal" width="800"/>
+  <br>
+  <em>Editing Bookmarks & Folders</em>
 </p>
 
 ---
