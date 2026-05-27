@@ -32,6 +32,29 @@ If you manage multiple Microsoft 365, Azure, Entra, or Intune environments simul
 
 Working in IT support demands precision. OmniClient acts as your absolute command centre, giving you an all-encompassing, omnipotent view over your entire client roster from a single, unified interface.
 
+## 🛠️ Building from Source
+
+If you prefer not to use the pre-compiled AppImage, you can easily build OmniClient directly from the source code.
+
+**Prerequisites:** Node.js (v18+) and npm (v9+)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/brisbinchicken/omniclient.git
+cd omniclient
+
+# 2. Install dependencies
+npm install
+
+# 3. Run in development mode (hot-reload enabled)
+npm start
+
+# 4. Compile your own AppImage
+npm run dist
+```
+
+*(For a deep dive into the architecture, IPC routes, and security model, check out the [BUILD-PACK.md](BUILD-PACK.md) included in this repository).*
+
 ## 📸 Screenshots
 
 <p align="center">
