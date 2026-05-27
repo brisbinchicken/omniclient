@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniClient Bookmarks</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            background: var(--chrome-bg);
+            color: var(--chrome-text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        #manager-layout {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        #sidebar {
+            width: 250px;
+            background: var(--chrome-surface);
+            border-right: 1px solid var(--chrome-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--chrome-border);
+        }
+
+        #folder-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            color: var(--chrome-text-secondary);
+            transition: background 0.15s, color 0.15s;
+            user-select: none;
+        }
+
+        .tree-item:hover {
+            background: var(--hover-overlay);
+            color: var(--chrome-text);
+        }
+
+        .tree-item.active {
+            background: var(--active-overlay);
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .tree-item svg {
+            flex-shrink: 0;
+        }
+
+        #main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--chrome-bg);
+        }
+
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--chrome-border);
+        }
+
+        .main-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .search-box {
+            background: var(--chrome-surface-variant);
+            border: 1px solid transparent;
+            border-radius: var(--radius-pill);
+            padding: 6px 16px;
+            color: var(--chrome-text);
+            width: 300px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box:focus {
+            border-color: var(--accent);
+        }
+
+        #bookmark-grid {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            align-content: start;
+        }
+
+        .bm-card {
+            background: var(--chrome-surface);
+            border: 1px solid var(--chrome-border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+            position: relative;
+        }
+
+        .bm-card:hover {
+            border-color: var(--chrome-text-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .bm-card.folder {
+            border-style: dashed;
+        }
+
+        .bm-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--chrome-surface-variant);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+
+        .bm-favicon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .bm-title {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bm-url {
+            font-size: 11px;
+            color: var(--chrome-text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bm-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .bm-card:hover .bm-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            background: var(--chrome-surface-variant);
+            border: none;
+            color: var(--chrome-text-secondary);
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: var(--hover-overlay);
+            color: var(--chrome-text);
+        }
+    </style>
+</head>
+<body>
+    <div id="manager-layout">
+        <div id="sidebar">
+            <div class="sidebar-header">
+                Bookmarks
+            </div>
+            <div id="folder-tree">
+                <!-- Tree injected here -->
+            </div>
+        </div>
+        <div id="main-content">
+            <div class="main-header">
+                <h2 id="current-folder-title">Bookmarks Bar</h2>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button id="add-bookmark-btn" class="secondary-btn" style="padding: 6px 12px; font-size: 13px;">Add Bookmark</button>
+                    <button id="add-folder-btn" class="secondary-btn" style="padding: 6px 12px; font-size: 13px;">Add Folder</button>
+                    <input type="text" id="search-input" class="search-box" placeholder="Search bookmarks...">
+                </div>
+            </div>
+            <div id="bookmark-grid">
+                <!-- Bookmark cards injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2>Edit Bookmark</h2>
+            <input type="hidden" id="edit-id">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="edit-title">
+            </div>
+            <div class="form-group" id="edit-url-group">
+                <label>URL</label>
+                <input type="text" id="edit-url">
+            </div>
+            <div class="form-group">
+                <label>Folder</label>
+                <select id="edit-folder-select"></select>
+            </div>
+            <div class="modal-actions">
+                <button id="edit-cancel-btn" class="secondary-btn">Cancel</button>
+                <button id="edit-save-btn" class="primary-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/bookmark-manager.js"></script>
+</body>
+</html>

@@ -1,0 +1,1152 @@
+/* ═══════════════════════════════════════════════════════════════
+   The Doctor — Chrome Dark Mode Theme
+   Version 46 Beta
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+    --chrome-bg:               #202124;
+    --chrome-surface:          #292b2e;
+    --chrome-surface-variant:  #35363a;
+    --chrome-text:             #e8eaed;
+    --chrome-text-secondary:   #9aa0a6;
+    --chrome-border:           #3c4043;
+    --accent:                  #FFCC00;
+    --accent-hover:            #FFD633;
+    --danger:                  #f28b82;
+    --danger-hover:            #e06b6b;
+
+    /* Derived helpers */
+    --hover-overlay:           rgba(255, 255, 255, 0.1);
+    --active-overlay:          rgba(255, 255, 255, 0.06);
+    --shadow-panel:            0 8px 24px rgba(0, 0, 0, 0.45);
+    --shadow-dropdown:         0 6px 20px rgba(0, 0, 0, 0.5);
+    --radius-sm:               4px;
+    --radius-md:               8px;
+    --radius-lg:               12px;
+    --radius-pill:             24px;
+
+    /* Panel widths */
+    --vault-width:             380px;
+    --history-width:           400px;
+}
+
+/* ── Reset & Base ─────────────────────────────────────────── */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--chrome-bg);
+    color: var(--chrome-text);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+}
+
+input, button, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    outline: none;
+}
+
+input {
+    outline: none;
+    border: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Utility: no-select for UI chrome */
+.no-select {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ── App Layout ───────────────────────────────────────────── */
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   1. TAB STRIP
+   ═══════════════════════════════════════════════════════════ */
+
+#tab-strip {
+    display: flex;
+    align-items: flex-end;
+    background: var(--chrome-surface);
+    height: 38px;
+    min-height: 38px;
+    padding: 0 8px;
+    position: relative;
+    user-select: none;
+    -webkit-app-region: drag;
+}
+
+/* Transparent drag region fills the tab strip background */
+#tab-strip-drag-region {
+    position: absolute;
+    inset: 0;
+    -webkit-app-region: drag;
+    z-index: 0;
+}
+
+#tab-scroll-area {
+    display: flex;
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    z-index: 1;
+    -webkit-app-region: no-drag;
+}
+
+#tab-scroll-area::-webkit-scrollbar {
+    display: none;
+}
+
+#tab-list {
+    display: flex;
+    list-style: none;
+    align-items: flex-end;
+    gap: 1px;
+    min-width: 0;
+}
+
+/* Individual tab */
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 240px;
+    min-width: 60px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px 8px 0 0;
+    background: transparent;
+    color: var(--chrome-text-secondary);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    -webkit-app-region: no-drag;
+}
+
+.tab:hover {
+    background: var(--hover-overlay);
+    color: var(--chrome-text);
+}
+
+.tab.active {
+    background: var(--chrome-surface-variant);
+    color: var(--chrome-text);
+    border-top: 2px solid var(--accent);
+}
+
+/* Coloured dot next to tab title */
+.tab-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.tab-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    line-height: 32px;
+}
+
+/* Tab close button — visible on hover */
+.close-tab-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+    color: var(--chrome-text-secondary);
+    font-size: 11px;
+}
+
+.tab:hover .close-tab-btn,
+.tab.active .close-tab-btn {
+    opacity: 1;
+}
+
+.close-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--chrome-text);
+}
+
+/* New-tab button in tab strip */
+.tab-strip-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-left: 4px;
+    margin-bottom: 4px;
+    color: var(--chrome-text-secondary);
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+    z-index: 1;
+    -webkit-app-region: no-drag;
+}
+
+.tab-strip-btn:hover {
+    background: var(--hover-overlay);
+    color: var(--chrome-text);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   2. TOOLBAR
+   ═══════════════════════════════════════════════════════════ */
+
+#toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--chrome-surface-variant);
+    height: 44px;
+    min-height: 44px;
+    padding: 0 8px;
+    user-select: none;
+}
+
+.toolbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: var(--chrome-text-secondary);
+    transition: background 0.15s, color 0.15s;
+    font-size: 16px;
+}
+
+.toolbar-btn:hover {
+    background: var(--hover-overlay);
+    color: var(--chrome-text);
+}
+
+.toolbar-btn:active {
+    background: var(--active-overlay);
+}
+
+/* Omnibox / address bar */
+.omnibox-wrapper {
+    flex: 1;
+    margin: 0 8px;
+}
+
+#address-input {
+    width: 100%;
+    height: 32px;
+    padding: 0 16px;
+    background: var(--chrome-bg);
+    border: 2px solid transparent;
+    border-radius: var(--radius-pill);
+    color: var(--chrome-text);
+    font-size: 13px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+#address-input::placeholder {
+    color: var(--chrome-text-secondary);
+}
+
+#address-input:focus {
+    border-color: var(--accent);
+    background: var(--chrome-surface);
+}
+
+/* Toolbar right-side actions */
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Client avatar button */
+.client-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--chrome-border);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    transition: box-shadow 0.2s, transform 0.15s;
+    cursor: pointer;
+    border: 2px solid transparent;
+    margin-left: 4px;
+}
+
+.client-avatar:hover {
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+.client-avatar.active {
+    border-color: var(--accent);
+}
+
+.active-client-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--chrome-text);
+    margin: 0 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3. BOOKMARKS BAR
+   ═══════════════════════════════════════════════════════════ */
+
+#bookmarks-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--chrome-surface);
+    height: 30px;
+    min-height: 30px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--chrome-border);
+    overflow: hidden;
+    user-select: none;
+}
+
+#bookmarks-list {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+
+#bookmarks-list::-webkit-scrollbar {
+    display: none;
+}
+
+.bookmark-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--chrome-text);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.bookmark-item:hover {
+    background: var(--hover-overlay);
+    color: var(--chrome-text);
+}
+
+.bookmark-folder-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.bookmark-folder-wrapper-inner {
+    position: relative;
+    width: 100%;
+}
+
+.bookmark-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    background: var(--chrome-surface);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-dropdown);
+    padding: 4px 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+}
+
+.bookmark-folder-wrapper-inner .bookmark-dropdown {
+    top: 0;
+    left: 100%;
+    margin-left: -4px;
+}
+
+.bookmark-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    color: var(--chrome-text);
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+
+.bookmark-dropdown-item:hover {
+    background: var(--hover-overlay);
+}
+
+.bookmark-dropdown-empty {
+    padding: 8px 12px;
+    color: var(--chrome-text-secondary);
+    font-size: 12px;
+    font-style: italic;
+    white-space: nowrap;
+}
+
+.bookmarks-empty {
+    color: var(--chrome-text-secondary);
+    font-size: 11px;
+    font-style: italic;
+    padding: 0 8px;
+}
+
+.bookmarks-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--chrome-surface-variant);
+    border: 1px solid var(--chrome-border);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+}
+
+.bookmarks-action-btn:hover {
+    background: var(--hover-overlay);
+    color: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   4. CONTENT AREA / WEBVIEW
+   ═══════════════════════════════════════════════════════════ */
+
+#content-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+#webview-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* ── Empty / Welcome State ────────────────────────────────── */
+
+#empty-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--chrome-text-secondary);
+    user-select: none;
+}
+
+#empty-state .empty-logo {
+    width: 128px;
+    height: 128px;
+    opacity: 0.6;
+    margin-bottom: 8px;
+}
+
+#empty-state h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--chrome-text);
+}
+
+#empty-state p {
+    font-size: 14px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   5. CLIENT DROPDOWN
+   ═══════════════════════════════════════════════════════════ */
+
+#client-dropdown {
+    position: fixed;
+    top: 82px;               /* Below tab strip + toolbar */
+    right: 8px;
+    width: 300px;
+    max-height: 480px;
+    background: var(--chrome-surface);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-dropdown);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-header {
+    padding: 12px 12px 8px;
+}
+
+.dropdown-header input {
+    width: 100%;
+    height: 32px;
+    padding: 0 12px;
+    background: var(--chrome-bg);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-md);
+    color: var(--chrome-text);
+    font-size: 12px;
+    transition: border-color 0.2s;
+}
+
+.dropdown-header input:focus {
+    border-color: var(--accent);
+}
+
+#client-list-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+    max-height: 320px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--chrome-border) transparent;
+}
+
+#client-list {
+    list-style: none;
+}
+
+#client-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 0.12s;
+    position: relative;
+}
+
+#client-list li:hover {
+    background: var(--hover-overlay);
+}
+
+#client-list li.active {
+    background: var(--active-overlay);
+}
+
+#client-list li.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--accent);
+}
+
+#client-list li.dragging {
+    opacity: 0.5;
+}
+
+#client-list li.drag-over {
+    border-top: 2px solid var(--accent);
+}
+
+/* Client avatar in dropdown list */
+.client-list-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.client-list-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+/* Edit and Delete buttons in client list — appear on hover */
+.delete-client-btn, .edit-client-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    color: var(--chrome-text-secondary);
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+    margin-left: 4px;
+}
+
+#client-list li:hover .delete-client-btn,
+#client-list li:hover .edit-client-btn {
+    opacity: 1;
+}
+
+.delete-client-btn:hover {
+    background: #FF4444;
+    color: white;
+}
+
+.edit-client-btn:hover {
+    background: var(--chrome-border);
+    color: var(--chrome-text);
+}
+
+/* Add client button inside dropdown */
+.dropdown-add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    margin: 4px 8px 8px;
+    border-radius: var(--radius-md);
+    background: var(--chrome-surface-variant);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.15s;
+}
+
+.dropdown-add-btn:hover {
+    background: var(--hover-overlay);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   6 & 7. SIDE PANELS (Vault & History)
+   ═══════════════════════════════════════════════════════════ */
+
+.side-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--chrome-surface);
+    border-left: 1px solid var(--chrome-border);
+    box-shadow: var(--shadow-panel);
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: panelSlideIn 0.2s ease;
+}
+
+@keyframes panelSlideIn {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(0); }
+}
+
+#vault-container {
+    width: var(--vault-width);
+}
+
+#history-container {
+    width: var(--history-width);
+}
+
+.panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 16px 16px 8px;
+}
+
+.panel-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.panel-header p {
+    font-size: 12px;
+    color: var(--chrome-text-secondary);
+}
+
+.panel-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: var(--chrome-text-secondary);
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.panel-close-btn:hover {
+    background: var(--hover-overlay);
+    color: var(--chrome-text);
+}
+
+.panel-search {
+    margin: 0 16px 12px;
+    height: 32px;
+    padding: 0 12px;
+    background: var(--chrome-bg);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-md);
+    color: var(--chrome-text);
+    font-size: 12px;
+    transition: border-color 0.2s;
+}
+
+.panel-search:focus {
+    border-color: var(--accent);
+}
+
+.panel-scroll-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 16px 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--chrome-border) transparent;
+}
+
+/* History toolbar (search + clear) */
+.history-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 12px;
+}
+
+.history-toolbar .panel-search {
+    flex: 1;
+    margin: 0;
+}
+
+/* ── Credential Cards ─────────────────────────────────────── */
+
+.credential-card {
+    background: var(--chrome-surface-variant);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+}
+
+.credential-card:hover {
+    border-color: var(--chrome-text-secondary);
+}
+
+.cred-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.cred-label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--chrome-text);
+}
+
+.cred-username {
+    font-size: 12px;
+    color: var(--chrome-text-secondary);
+}
+
+.cred-actions {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.cred-actions button {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+}
+
+.inject-user-btn {
+    background: var(--chrome-bg);
+    color: var(--chrome-text);
+    border: 1px solid var(--chrome-border);
+}
+
+.inject-user-btn:hover {
+    background: var(--hover-overlay);
+}
+
+.inject-pass-btn {
+    background: var(--accent);
+    color: #000;
+}
+
+.inject-pass-btn:hover {
+    background: var(--accent-hover);
+}
+
+.cred-manage {
+    display: flex;
+    gap: 6px;
+}
+
+.cred-manage-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    color: var(--chrome-text-secondary);
+    transition: background 0.15s, color 0.15s;
+}
+
+.cred-manage-btn:hover {
+    background: var(--hover-overlay);
+    color: var(--chrome-text);
+}
+
+.cred-manage-btn.delete:hover {
+    background: rgba(242, 139, 130, 0.15);
+    color: var(--danger);
+}
+
+/* Inline edit form within credential card */
+.cred-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cred-edit-form input {
+    padding: 6px 10px;
+    background: var(--chrome-bg);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-sm);
+    color: var(--chrome-text);
+    font-size: 12px;
+}
+
+.cred-edit-form input:focus {
+    border-color: var(--accent);
+}
+
+.edit-actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* Add credential form */
+.add-cred-form {
+    padding: 12px 16px 16px;
+    border-top: 1px solid var(--chrome-border);
+}
+
+.add-cred-form h3 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--chrome-text);
+}
+
+.add-cred-form input {
+    width: 100%;
+    padding: 7px 10px;
+    margin-bottom: 6px;
+    background: var(--chrome-bg);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-sm);
+    color: var(--chrome-text);
+    font-size: 12px;
+}
+
+.add-cred-form input:focus {
+    border-color: var(--accent);
+}
+
+/* ── History Items ────────────────────────────────────────── */
+
+.history-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.12s;
+}
+
+.history-item:hover {
+    background: var(--hover-overlay);
+}
+
+.history-title {
+    font-size: 13px;
+    color: var(--chrome-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-url {
+    font-size: 11px;
+    color: var(--accent);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-time {
+    font-size: 10px;
+    color: var(--chrome-text-secondary);
+}
+
+.history-empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--chrome-text-secondary);
+    font-size: 13px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   8 & 9. MODALS
+   ═══════════════════════════════════════════════════════════ */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: modalFadeIn 0.15s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.modal-card {
+    background: var(--chrome-surface);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    width: 420px;
+    max-width: 90vw;
+    box-shadow: var(--shadow-panel);
+}
+
+.modal-card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.modal-subtitle {
+    color: var(--chrome-text-secondary);
+    margin-bottom: 16px;
+    font-size: 13px;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--chrome-text-secondary);
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--chrome-bg);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-md);
+    color: var(--chrome-text);
+    transition: border-color 0.2s;
+}
+
+.form-group select option {
+    background: var(--chrome-bg);
+    color: var(--chrome-text);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--accent);
+}
+
+.form-group input[readonly] {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.form-group input[type="color"] {
+    width: 48px;
+    height: 32px;
+    padding: 2px;
+    background: var(--chrome-bg);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SHARED BUTTONS
+   ═══════════════════════════════════════════════════════════ */
+
+.accent-btn {
+    padding: 8px 20px;
+    background: var(--accent);
+    color: #000;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 13px;
+    transition: background 0.15s;
+}
+
+.accent-btn:hover {
+    background: var(--accent-hover);
+}
+
+.ghost-btn {
+    padding: 8px 20px;
+    background: transparent;
+    color: var(--chrome-text-secondary);
+    border: 1px solid var(--chrome-border);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    font-size: 13px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.ghost-btn:hover {
+    background: var(--hover-overlay);
+    color: var(--chrome-text);
+}
+
+.danger-btn {
+    padding: 6px 14px;
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+
+.danger-btn:hover {
+    background: rgba(242, 139, 130, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLLBAR STYLING (Webkit)
+   ═══════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--chrome-border);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--chrome-text-secondary);
+}

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniClient</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+
+        <!-- ═══════════════════════════════════════════════
+             1. TAB STRIP — top of window, Chrome-style
+             ═══════════════════════════════════════════════ -->
+        <div id="tab-strip">
+            <div id="tab-strip-drag-region"></div>
+            <div id="tab-scroll-area">
+                <ul id="tab-list">
+                    <!-- Tabs injected by renderer -->
+                    <button id="add-tab-btn" class="tab-strip-btn" title="New tab (Ctrl+N)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             2. TOOLBAR — nav buttons, omnibox, actions
+             ═══════════════════════════════════════════════ -->
+        <div id="toolbar">
+            <div class="toolbar-nav">
+                <button id="back-btn" class="toolbar-btn" title="Go back">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <button id="forward-btn" class="toolbar-btn" title="Go forward">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+                <button id="refresh-btn" class="toolbar-btn" title="Refresh page">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="omnibox-wrapper">
+                <input type="text" id="address-input" placeholder="Search or enter URL" spellcheck="false" autocomplete="off">
+            </div>
+            <div class="toolbar-actions">
+                <button id="bookmark-btn" class="toolbar-btn" title="Bookmark this page">⭐</button>
+                <button id="history-btn" class="toolbar-btn" title="History (Ctrl+H)">🕐</button>
+                <button id="vault-toggle-btn" class="toolbar-btn" title="Credential Vault">🔐</button>
+                <span id="active-client-name" class="active-client-label hidden"></span>
+                <button id="client-avatar-btn" class="client-avatar" title="Switch client">
+                    <!-- Filled dynamically: coloured circle with initial -->
+                </button>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             3. BOOKMARKS BAR
+             ═══════════════════════════════════════════════ -->
+        <div id="bookmarks-bar" class="hidden">
+            <div id="bookmarks-list">
+                <!-- Bookmark buttons injected here -->
+            </div>
+            <span id="bookmarks-empty-msg" class="bookmarks-empty hidden">No bookmarks</span>
+            <button id="import-bookmarks-btn" class="bookmarks-action-btn" title="Import bookmarks from HTML">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Import
+            </button>
+            <input type="file" id="bookmark-file-input" accept=".html" class="hidden">
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             4. MAIN CONTENT AREA — webview + empty state
+             ═══════════════════════════════════════════════ -->
+        <div id="content-area">
+            <div id="webview-container">
+                <!-- WebContentsView is positioned over this div by main process -->
+                <div id="empty-state">
+                    <img src="assets/omniclient-512.png" alt="OmniClient Logo" class="empty-logo">
+                    <h2>OmniClient</h2>
+                    <p>Select a client to get started</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             5. CLIENT DROPDOWN PANEL
+             ═══════════════════════════════════════════════ -->
+        <div id="client-dropdown" class="hidden">
+            <div class="dropdown-header">
+                <input type="text" id="client-search" placeholder="Search clients…" spellcheck="false">
+            </div>
+            <div id="client-list-scroll">
+                <ul id="client-list">
+                    <!-- Client items injected here -->
+                </ul>
+            </div>
+            <button id="add-client-btn" class="dropdown-add-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Client
+            </button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             6. VAULT PANEL — floating right
+             ═══════════════════════════════════════════════ -->
+        <div id="vault-container" class="side-panel hidden">
+            <div class="panel-header">
+                <div>
+                    <h2>Credentials Vault</h2>
+                    <p id="vault-client-name">Select a client to view credentials.</p>
+                </div>
+                <button id="vault-close-btn" class="panel-close-btn" title="Close vault">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <input type="text" id="vault-search" class="panel-search" placeholder="Search credentials…" spellcheck="false">
+            <div id="credentials-list" class="panel-scroll-body">
+                <!-- Credential cards injected here -->
+            </div>
+            <div id="add-cred-wrapper" class="add-cred-form hidden">
+                <h3>Add Credential</h3>
+                <input type="text" id="cred-label" placeholder="Label (e.g. M365 Admin)">
+                <input type="text" id="cred-username" placeholder="Username / Email">
+                <input type="password" id="cred-password" placeholder="Password">
+                <button id="save-cred-btn" class="accent-btn">Save Credential</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             7. HISTORY PANEL — floating right
+             ═══════════════════════════════════════════════ -->
+        <div id="history-container" class="side-panel hidden">
+            <div class="panel-header">
+                <div>
+                    <h2>Browsing History</h2>
+                    <p id="history-client-name">Select a client to view history.</p>
+                </div>
+                <button id="history-close-btn" class="panel-close-btn" title="Close history">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="history-toolbar">
+                <input type="text" id="history-search" class="panel-search" placeholder="Search history…" spellcheck="false">
+                <button id="clear-history-btn" class="danger-btn" title="Clear all history">Clear</button>
+            </div>
+            <div id="history-list" class="panel-scroll-body">
+                <!-- History entries injected here -->
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             8. CLIENT MODAL
+             ═══════════════════════════════════════════════ -->
+        <div id="client-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <h2 id="client-modal-title">Add New Client</h2>
+                <input type="hidden" id="client-id-input">
+                <div class="form-group">
+                    <label for="client-name">Client Name</label>
+                    <input type="text" id="client-name" placeholder="e.g. Contoso Ltd">
+                </div>
+                <div class="form-group">
+                    <label for="client-colour">Colour</label>
+                    <input type="color" id="client-colour" value="#FFCC00">
+                </div>
+                <div class="form-group">
+                    <label for="client-start-url">Starting URL (Optional)</label>
+                    <input type="text" id="client-start-url" placeholder="e.g. https://portal.office.com">
+                </div>
+                <div class="modal-actions">
+                    <button id="cancel-client-btn" class="secondary-btn">Cancel</button>
+                    <button id="save-client-btn" class="primary-btn">Save Client</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             9. SAVE CREDENTIAL MODAL (auto-prompt)
+             ═══════════════════════════════════════════════ -->
+        <div id="save-cred-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <h2>💾 Save Password?</h2>
+                <p id="save-cred-site-name" class="modal-subtitle"></p>
+                <div class="form-group">
+                    <label>Label</label>
+                    <input type="text" id="save-cred-label">
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="save-cred-username" readonly>
+                </div>
+                <div class="modal-actions">
+                    <button id="save-cred-dismiss-btn" class="ghost-btn">Dismiss</button>
+                    <button id="save-cred-confirm-btn" class="accent-btn">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             PROMPT MODAL
+             ═══════════════════════════════════════════════ -->
+        <div id="prompt-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <h2 id="prompt-title">Prompt</h2>
+                <div class="form-group">
+                    <input type="text" id="prompt-input">
+                </div>
+                <div class="modal-actions">
+                    <button id="prompt-cancel-btn" class="secondary-btn">Cancel</button>
+                    <button id="prompt-ok-btn" class="primary-btn">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             10. BOOKMARK MODAL
+             ═══════════════════════════════════════════════ -->
+        <div id="bookmark-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <h2>Edit Bookmark</h2>
+                <input type="hidden" id="bookmark-id-input">
+                <div class="form-group">
+                    <label for="bookmark-title">Name</label>
+                    <input type="text" id="bookmark-title">
+                </div>
+                <div class="form-group">
+                    <label for="bookmark-url">URL</label>
+                    <input type="text" id="bookmark-url">
+                </div>
+                <div class="form-group">
+                    <label for="bookmark-folder">Folder</label>
+                    <select id="bookmark-folder">
+                        <option value="root">Bookmarks Bar</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button id="cancel-bookmark-btn" class="secondary-btn">Cancel</button>
+                    <button id="save-bookmark-btn" class="primary-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
