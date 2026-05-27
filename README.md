@@ -54,6 +54,7 @@ npm run dist
 ```
 
 *(For a deep dive into the architecture, IPC routes, and security model, check out the [BUILD-PACK.md](BUILD-PACK.md) included in this repository).*
+*(For instructions on persistent desktop integration, system requirements, and migrating client data, check out the [LINUX-USERGUIDE.md](LINUX-USERGUIDE.md)).*
 
 ## 📸 Screenshots
 
